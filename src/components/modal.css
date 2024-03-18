@@ -1,0 +1,66 @@
+.presentation {
+    z-index: 1200;
+    position: absolute;
+}
+
+.wrapper-modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    inset: 0px;
+    background-color: rgb(0 0 0 / 71%);
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+  }
+ 
+.modal-content {
+    position: relative;
+    max-width: 800px;
+    max-height: 250px;
+    box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+      0px 5px 8px 0px rgba(0, 0, 0, 0.14), 0px 1px 14px 0px rgba(0, 0, 0, 0.12);
+    background: #111;
+    overflow: hidden;
+    border-radius: 8px;
+    transition: all 400ms ease-in-out 2s;
+    animation: fadeIn 400ms;
+}
+
+.modal-close {
+    position: absolute;
+    right: 1px;
+    top: 1px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    z-index: 1000;
+    background-color: gray;
+    color: white;
+    &:hover {
+        background-color: darkgray; 
+      }
+  }
+
+.submit-button {
+    display: flex;
+    width: 30%;
+    height: 30%;
+    padding: 10px;
+    background-color: gray;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    &:hover {
+      background-color: darkgray; 
+    }
+}
+
+.submit-button-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%; 
+    margin-top: 20px; 
+  }
