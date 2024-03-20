@@ -60,7 +60,7 @@ function ReservationPage() {
   //전화 번호, 인원 수, 추가 사항
   //이렇게 말고 객체형으로 한 번에 묶어줘도 될 듯
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [partySize, setPartySize] = useState(0);
+  const [partySize, setPartySize] = useState(1);
   const [additionalRequests, setAdditionalRequests] = useState("");
 
   //식당 식별자(이전 로그인 페이지에서 넘어오면서 같이 온 라우팅 변수를 useParams로 뽑기
@@ -76,6 +76,7 @@ function ReservationPage() {
   const handleCloseModal = () => {
     setShowModal(false);
   };
+
   //맨 처음 DB에서 식당 식별자로 손님 정보 받아와서 대기 인원 추출(맨 처음 1번만 시행, 일단)
   useEffect(() => {
     const fetchCurrentWaiting = async () => {
@@ -87,9 +88,11 @@ function ReservationPage() {
         //왠지는 모르겠지만 일단 프로미스 객체 형태로 밖에 반환이 안 된다. 특정
         //식당 ID && status가 waiting인 것들만 추려서 응답받고 싶었는데 모르겠음.
         //일단 추출은 완료
+        //console.log(restaurantId);
         const waiting = response.data.items.reduce((acc, cur) => {
           return cur.restaurant_id == restaurantId ? acc + 1 : acc;
         }, 0);
+        console.log("렌더링")
         setCurrentWaiting(waiting);
       } catch (error) {
         console.error("대기 중인 사람 수 조회 실패", error);
@@ -97,13 +100,35 @@ function ReservationPage() {
     };
 
     fetchCurrentWaiting();
-  }, []);
+  }, [restaurantId]);
 
   //대기 인원 state에 변화있을 때마다 리렌더링
   useEffect(() => {}, [currentWaiting]);
 
+  const resetAllstate = () => {
+    setPhoneNumber("");
+    setPartySize(0);
+    setAdditionalRequests("");
+  }
+
+  const reserve_timestamp = () => {
+    let now = new Date();
+    console.log(now.getTime());
+    return now.getTime();
+  }
+
+  const reserve_date = () => {
+    let now = new Date();
+    return now.toLocaleDateString();
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!phoneNumber.trim()){
+        alert("전화 번호를 올바르게 입력해주세요");
+        resetAllstate();
+        return;
+    }
     try {
       await axios.post(
         "http://127.0.0.1:8090/api/collections/customers/records",
@@ -113,13 +138,12 @@ function ReservationPage() {
           member: partySize,
           extra: additionalRequests,
           status: "waiting",
+          timestamp: reserve_timestamp(),
+          reserve_date: reserve_date()
         }
       );
       alert("예약이 추가되었습니다.");
-
-      setPhoneNumber("");
-      setPartySize(0);
-      setAdditionalRequests("");
+      resetAllstate();
       //대기자 수 state 업데이트 해주고
       setCurrentWaiting((prev) => prev + 1);
       // 예약 추가 후 현재 대기 중인 사람 수를 다시 조회
@@ -133,7 +157,7 @@ function ReservationPage() {
     <BackGround>
       <div>
         <ConfigButton onClick={handleShowModal}>설정</ConfigButton>
-        <PasswordModal isOpen={showModal} onClose={handleCloseModal} />
+        <PasswordModal restaurantId={restaurantId} isOpen={showModal} onClose={handleCloseModal} />
       </div>
 
       <RerserveForm onSubmit={handleSubmit}>
@@ -152,7 +176,7 @@ function ReservationPage() {
             전화 번호
           </label>
           <input
-            style={{ width: "100%", padding: "2px" }}
+            style={{ width: "100%", padding: "2px"}}
             id="phoneNumber"
             type="tel"
             value={phoneNumber}
@@ -175,6 +199,7 @@ function ReservationPage() {
             style={{ width: "100%", padding: "2px", textAlign: "center"}}
             id="partySize"
             type="number"
+            min={1}
             value={partySize}
             onChange={(e) => setPartySize(e.target.value)}
             required

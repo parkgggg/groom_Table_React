@@ -6,16 +6,16 @@ import "./modal.css";
 
 //넷플릭스 강의 듣고 모달 사용법 좀 익히자
 //모달에 비번 입력하면 admin 페이지로 리다이렉팅(/레스토랑식별자/admin)
-function PasswordModal({ isOpen, onClose }) {
+function PasswordModal({ restaurantId, isOpen, onClose }) {
   const [password, setPassword] = useState("");
   const navigate = useNavigate(); // useNavigate Hook 사용
-  const { restaurantId } = useParams();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       //const response = await axios.get(`http://127.0.0.1:8090/api/collections/restaurant/records?identifier=${username},password=${password}`)
       console.log(password);
+      console.log(restaurantId)
       setPassword("");
       navigate(`/${restaurantId}/admin`); // useNavigate 함수로 이동
       onClose(); // 모달 닫기
