@@ -1,55 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import PasswordModal from "../components/PasswordModal"; //에러 무시해
-import styled from "styled-components";
-
-const BackGround = styled.div`
-  position: relative; // 설정 버튼의 절대 위치를 위해 relative로 설정
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: white;
-`;
-
-const RerserveForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 500px; /* 고정된 너비 설정 */
-  background-color: #f0f0f0;
-  padding: 20px;
-  border-radius: 10px;
-`;
-
-const ConfigButton = styled.button`
-  position: absolute;
-  top: 20px; // 상단에서 20px 떨어진 위치
-  right: 20px; // 우측에서 20px 떨어진 위치
-  padding: 10px;
-  background-color: gray;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  &:hover {
-    background-color: darkgray;
-  }
-`;
-
-const Button = styled.button`
-  width: 50%;
-  padding: 10px;
-  background-color: gray;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  &:hover {
-    background-color: darkgray; // 버튼을 호버했을 때의 배경색 변경
-  }
-`;
+import {ReserveBackGround, AdminButton, LogoutButton, RerserveForm, Button } from "./PageStyles";
 
 function ReservationPage() {
   // 현재 대기 중인 사람 수 state, 클라이언트단에서 state로 대기 인원 수 관리하고, 백엔드로 업데이트
@@ -65,7 +18,8 @@ function ReservationPage() {
 
   //식당 식별자(이전 로그인 페이지에서 넘어오면서 같이 온 라우팅 변수를 useParams로 뽑기
   const { restaurantId } = useParams();
- 
+  const location = useLocation();
+
   //관리자 페이지 접근용 모달
   const [showModal, setShowModal] = useState(false); // 모달 보이기/숨기기 상태
 
@@ -81,19 +35,12 @@ function ReservationPage() {
   useEffect(() => {
     const fetchCurrentWaiting = async () => {
       try {
-        // 백엔드에서 대기 중인 사람 수를 조회하는 API 엔드포인트로 교체해야 합니다.
-        const response = await axios.get(
-          `http://127.0.0.1:8090/api/collections/customers/records?restaurant_id=${restaurantId}&status=waiting`
-        );
-        //왠지는 모르겠지만 일단 프로미스 객체 형태로 밖에 반환이 안 된다. 특정
-        //식당 ID && status가 waiting인 것들만 추려서 응답받고 싶었는데 모르겠음.
-        //일단 추출은 완료
-        //console.log(restaurantId);
-        const waiting = response.data.items.reduce((acc, cur) => {
-          return cur.restaurant_id == restaurantId ? acc + 1 : acc;
-        }, 0);
-        console.log("렌더링")
-        setCurrentWaiting(waiting);
+        const response = await axios.get("http://localhost:8080/waitingCnt", {
+          params: {
+            company_id: restaurantId,
+          },
+        });
+        setCurrentWaiting(response.data);
       } catch (error) {
         console.error("대기 중인 사람 수 조회 실패", error);
       }
@@ -109,37 +56,30 @@ function ReservationPage() {
     setPhoneNumber("");
     setPartySize(0);
     setAdditionalRequests("");
-  }
+  };
 
-  const reserve_timestamp = () => {
-    let now = new Date();
-    console.log(now.getTime());
-    return now.getTime();
-  }
-
-  const reserve_date = () => {
-    let now = new Date();
-    return now.toLocaleDateString();
-  }
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!phoneNumber.trim()){
-        alert("전화 번호를 올바르게 입력해주세요");
-        resetAllstate();
-        return;
+    if (!phoneNumber.trim()) {
+      alert("전화 번호를 올바르게 입력해주세요");
+      resetAllstate();
+      return;
     }
     try {
       await axios.post(
-        "http://127.0.0.1:8090/api/collections/customers/records",
-        {
-          restaurant_id: restaurantId,
-          phone: phoneNumber,
-          member: partySize,
+        "http://localhost:8080/insReser",
+        JSON.stringify({
+          phoneNum: phoneNumber,
+          peopleNum: partySize,
           extra: additionalRequests,
-          status: "waiting",
-          timestamp: reserve_timestamp(),
-          reserve_date: reserve_date()
+          companyId: restaurantId,
+          memberSeq: location.state.memberseq,
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
       alert("예약이 추가되었습니다.");
@@ -153,11 +93,20 @@ function ReservationPage() {
     }
   };
 
+  const handleLogout = () => {};
+
   return (
-    <BackGround>
+    <ReserveBackGround>
       <div>
-        <ConfigButton onClick={handleShowModal}>설정</ConfigButton>
-        <PasswordModal restaurantId={restaurantId} isOpen={showModal} onClose={handleCloseModal} />
+        <AdminButton onClick={handleShowModal}>관리</AdminButton>
+        <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
+
+        <PasswordModal
+          username={location.state.username}
+          restaurantId={restaurantId}
+          isOpen={showModal}
+          onClose={handleCloseModal}
+        />
       </div>
 
       <RerserveForm onSubmit={handleSubmit}>
@@ -176,7 +125,7 @@ function ReservationPage() {
             전화 번호
           </label>
           <input
-            style={{ width: "100%", padding: "2px"}}
+            style={{ width: "100%", padding: "2px" }}
             id="phoneNumber"
             type="tel"
             value={phoneNumber}
@@ -196,7 +145,7 @@ function ReservationPage() {
             인원 수:
           </label>
           <input
-            style={{ width: "100%", padding: "2px", textAlign: "center"}}
+            style={{ width: "100%", padding: "2px", textAlign: "center" }}
             id="partySize"
             type="number"
             min={1}
@@ -227,7 +176,7 @@ function ReservationPage() {
         </div>
         <Button type="submit">등록</Button>
       </RerserveForm>
-    </BackGround>
+    </ReserveBackGround>
   );
 }
 
