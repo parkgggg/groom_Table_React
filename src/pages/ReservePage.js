@@ -41,12 +41,17 @@ function ReservationPage() {
           },
         });
         setCurrentWaiting(response.data);
+        
       } catch (error) {
         console.error("대기 중인 사람 수 조회 실패", error);
       }
     };
-
     fetchCurrentWaiting();
+
+    const intervalId = setInterval(fetchCurrentWaiting, 5000); // 5초마다 조회
+    return () => clearInterval(intervalId);
+
+    //fetchCurrentWaiting();
   }, [restaurantId]);
 
   //대기 인원 state에 변화있을 때마다 리렌더링

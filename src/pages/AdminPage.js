@@ -14,6 +14,7 @@ import {AdminBackGround, ControlPanel, TableForm, WaitingTable, TableRow, Button
 function AdminPage() {
   const { restaurantId } = useParams();
   const [reservations, setReservations] = useState([]);
+  const [refreshkey, setRefreshKey] = useState(1);
   const [date, setDate] = useState(() => {
     let today = new Date();
     return (
@@ -31,14 +32,6 @@ function AdminPage() {
   useEffect(() => {
     const fetchReservations = async () => {
       try {
-        /*const response = await axios.get(
-          `http://127.0.0.1:8090/api/collections/customers/records`
-        );
-        const customers = response.data.items.filter((element) => {
-          return element.restaurant_id === restaurantId;
-          //return element.restaurant_id === restaurantId && element.date === date ;
-        });*/
-        //console.log(restaurantId);
         const response = await axios.get("http://localhost:8080/admin", {
           params: {
             company_id: restaurantId,
@@ -56,7 +49,8 @@ function AdminPage() {
       }
     };
     fetchReservations();
-  }, [restaurantId, date]);
+
+  }, [restaurantId, date, refreshkey]);
 
   const handleCall = () => {
     const fetchCall = async () => {
@@ -76,7 +70,7 @@ function AdminPage() {
             },
           }
         );
-        console.log("호출됨");
+        setRefreshKey(oldkey => (oldkey+1)%2)
       } catch (error) {
         console.log(error);
       }
@@ -102,6 +96,7 @@ function AdminPage() {
             },
           }
         );
+        setRefreshKey(oldkey => (oldkey+1)%2)
       } catch (error) {
         console.log(error);
       }
