@@ -1,26 +1,25 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import PasswordModal from "../components/PasswordModal"; //에러 무시해
-import {ReserveBackGround, AdminButton, LogoutButton, RerserveForm, Button } from "./PageStyles";
+import {
+  ReserveBackGround,
+  AdminButton,
+  LogoutButton,
+  RerserveForm,
+  Button,
+} from "../lib/styles/PageStyles";
 
 function ReservationPage() {
-  // 현재 대기 중인 사람 수 state, 클라이언트단에서 state로 대기 인원 수 관리하고, 백엔드로 업데이트
-  // 시키는 방식으로 하는 게 더 효율적(매번 쿼리 날려서 대기자 수 찾아올 필요가 없어짐)
   const [currentWaiting, setCurrentWaiting] = useState(0);
 
-  //예약자 정보
-  //전화 번호, 인원 수, 추가 사항
-  //이렇게 말고 객체형으로 한 번에 묶어줘도 될 듯
   const [phoneNumber, setPhoneNumber] = useState("");
   const [partySize, setPartySize] = useState(1);
   const [additionalRequests, setAdditionalRequests] = useState("");
+  const navigate = useNavigate();
+  const restaurantname = sessionStorage.getItem("restaurantname");
+  const memberseq = sessionStorage.getItem("memberseq");
 
-  //식당 식별자(이전 로그인 페이지에서 넘어오면서 같이 온 라우팅 변수를 useParams로 뽑기
-  const { restaurantId } = useParams();
-  const location = useLocation();
-
-  //관리자 페이지 접근용 모달
   const [showModal, setShowModal] = useState(false); // 모달 보이기/숨기기 상태
 
   const handleShowModal = () => {
@@ -31,17 +30,15 @@ function ReservationPage() {
     setShowModal(false);
   };
 
-  //맨 처음 DB에서 식당 식별자로 손님 정보 받아와서 대기 인원 추출(맨 처음 1번만 시행, 일단)
   useEffect(() => {
     const fetchCurrentWaiting = async () => {
       try {
         const response = await axios.get("http://localhost:8080/waitingCnt", {
           params: {
-            company_id: restaurantId,
+            company_id: restaurantname,
           },
         });
         setCurrentWaiting(response.data);
-        
       } catch (error) {
         console.error("대기 중인 사람 수 조회 실패", error);
       }
@@ -50,11 +47,8 @@ function ReservationPage() {
 
     const intervalId = setInterval(fetchCurrentWaiting, 5000); // 5초마다 조회
     return () => clearInterval(intervalId);
+  }, [restaurantname]);
 
-    //fetchCurrentWaiting();
-  }, [restaurantId]);
-
-  //대기 인원 state에 변화있을 때마다 리렌더링
   useEffect(() => {}, [currentWaiting]);
 
   const resetAllstate = () => {
@@ -78,8 +72,8 @@ function ReservationPage() {
           phoneNum: phoneNumber,
           peopleNum: partySize,
           extra: additionalRequests,
-          companyId: restaurantId,
-          memberSeq: location.state.memberseq,
+          companyId: restaurantname,
+          memberSeq: memberseq,
         }),
         {
           headers: {
@@ -89,16 +83,18 @@ function ReservationPage() {
       );
       alert("예약이 추가되었습니다.");
       resetAllstate();
-      //대기자 수 state 업데이트 해주고
       setCurrentWaiting((prev) => prev + 1);
-      // 예약 추가 후 현재 대기 중인 사람 수를 다시 조회
     } catch (error) {
       console.error("예약 추가 실패", error);
       alert("예약 추가에 실패했습니다.");
     }
   };
 
-  const handleLogout = () => {};
+  const handleLogout = () => {
+    resetAllstate();
+    sessionStorage.clear();
+    navigate("/");
+  };
 
   return (
     <ReserveBackGround>
@@ -106,12 +102,7 @@ function ReservationPage() {
         <AdminButton onClick={handleShowModal}>관리</AdminButton>
         <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
 
-        <PasswordModal
-          username={location.state.username}
-          restaurantId={restaurantId}
-          isOpen={showModal}
-          onClose={handleCloseModal}
-        />
+        <PasswordModal isOpen={showModal} onClose={handleCloseModal} />
       </div>
 
       <RerserveForm onSubmit={handleSubmit}>
@@ -130,7 +121,7 @@ function ReservationPage() {
             전화 번호
           </label>
           <input
-            style={{ width: "100%", padding: "2px" }}
+            style={{ width: "100%", padding: "2px", textAlign: "center" }}
             id="phoneNumber"
             type="tel"
             value={phoneNumber}
@@ -170,14 +161,13 @@ function ReservationPage() {
           >
             추가 요청:
           </label>
-          <input
-            style={{ width: "100%", padding: "2px" }}
-            id="additionalRequests"
-            type="text"
-            value={additionalRequests}
-            onChange={(e) => setAdditionalRequests(e.target.value)}
-            required
-          />
+          <select style={{ width: "100%", padding: "2px", textAlign: "center" }}>
+            <option value="">선택해주세요</option>
+            <option value="애기의자 필요">애기의자 필요</option>
+            <option value="창가 자리 원함">창가 자리 원함</option>
+            <option value="조용한 자리 원함">조용한 자리 원함</option>
+            <option value="기타 사항">기타 사항(직원에게 문의할게요)</option>
+          </select>
         </div>
         <Button type="submit">등록</Button>
       </RerserveForm>

@@ -1,21 +1,21 @@
 // PasswordModal.js
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./modal.css";
 
-//넷플릭스 강의 듣고 모달 사용법 좀 익히자
-//모달에 비번 입력하면 admin 페이지로 리다이렉팅(/레스토랑식별자/admin)
-function PasswordModal({ username, restaurantId, isOpen, onClose }) {
+function PasswordModal({ isOpen, onClose }) {
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // useNavigate Hook 사용
+  const navigate = useNavigate();
+  const username = sessionStorage.getItem("username");
+  const restaurantname = sessionStorage.getItem("restaurantname");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const qs = require('qs');
 
-      const response = await axios.post('http://localhost:8080/login', qs.stringify({
+      await axios.post('http://localhost:8080/login', qs.stringify({
         id: username,
         password: password
       }), {
@@ -25,8 +25,8 @@ function PasswordModal({ username, restaurantId, isOpen, onClose }) {
       });      
 
       setPassword("");
-      navigate(`/${restaurantId}/admin`); 
-      onClose(); // 모달 닫기
+      navigate(`/${restaurantname}/admin`); 
+      onClose();
     } catch (error) {
       console.error("로그인 실패:", error);
       setPassword("");
