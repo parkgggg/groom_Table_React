@@ -9,6 +9,7 @@ import {
   RerserveForm,
   Button,
 } from "../lib/styles/PageStyles";
+import img from "../assets/logo.png"
 
 function ReservationPage() {
   const [currentWaiting, setCurrentWaiting] = useState(0);
@@ -74,6 +75,7 @@ function ReservationPage() {
           extra: additionalRequests,
           companyId: restaurantname,
           memberSeq: memberseq,
+          
         }),
         {
           headers: {
@@ -98,11 +100,15 @@ function ReservationPage() {
 
   return (
     <ReserveBackGround>
+      
       <div>
         <AdminButton onClick={handleShowModal}>관리</AdminButton>
         <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
-
         <PasswordModal isOpen={showModal} onClose={handleCloseModal} />
+      </div>
+
+      <div style={{position: "absolute", top: "-50px", zIndex:"1"}}>
+        <img src={img} alt="로고" style={{width: "250px", height:"250px", background: "transparent" }}/>
       </div>
 
       <RerserveForm onSubmit={handleSubmit}>

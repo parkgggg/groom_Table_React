@@ -6,13 +6,13 @@ import styled, { css } from "styled-components";
 export const Button = styled.button`
   width: 50%;
   padding: 10px;
-  background-color: gray;
-  color: white;
+  background-color: #FFB966;
+  color: black;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   &:hover {
-    background-color: darkgray; // 버튼을 호버했을 때의 배경색 변경
+    background-color: #E9A553; // 버튼을 호버했을 때의 배경색 변경
   }
 `;
 
@@ -23,7 +23,7 @@ export const ReserveBackGround = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: white;
+  background-color: #F1CC9F;
 `;
 
 export const RerserveForm = styled.form`
@@ -31,7 +31,7 @@ export const RerserveForm = styled.form`
   flex-direction: column;
   align-items: center;
   width: 500px; /* 고정된 너비 설정 */
-  background-color: #f0f0f0;
+  background-color: #FEF0DF;
   padding: 20px;
   border-radius: 10px;
 `;
@@ -41,13 +41,13 @@ export const AdminButton = styled.button`
   top: 20px; // 상단에서 20px 떨어진 위치
   right: 100px; // 우측에서 20px 떨어진 위치
   padding: 10px;
-  background-color: gray;
-  color: white;
+  background-color: #FFB966;
+  color: black;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   &:hover {
-    background-color: darkgray;
+    background-color: #E9A553;
   }
 `;
 
@@ -56,13 +56,13 @@ export const LogoutButton = styled.button`
   top: 20px; // 상단에서 20px 떨어진 위치
   right: 20px; // 우측에서 20px 떨어진 위치
   padding: 10px;
-  background-color: gray;
-  color: white;
+  background-color: #FFB966;
+  color: black;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   &:hover {
-    background-color: darkgray;
+    background-color: #E9A553;
   }
 `;
 
@@ -72,7 +72,7 @@ export const LoginBackGround = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: white;
+  background-color: #F1CC9F;
 `;
 
 export const LoginForm = styled.form`
@@ -80,7 +80,7 @@ export const LoginForm = styled.form`
   flex-direction: column;
   align-items: center;
   width: 300px; /* 고정된 너비 설정 */
-  background-color: #f0f0f0;
+  background-color: #FEF0DF;
   padding: 20px;
   border-radius: 10px;
 `;
@@ -94,7 +94,7 @@ export const AdminBackGround = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: white;
+  background-color: #F1CC9F;
 `;
 
 export const ControlPanel = styled.div`
@@ -112,7 +112,7 @@ export const TableForm = styled.form`
   height: 80vh;
   overflow-y: auto; // 스크롤 추가
   width: 95vw; /* 고정된 너비 설정 */
-  background-color: #f0f0f0;
+  background-color: #FEF0DF;
   padding: 20px;
   border-radius: 10px;
 `;
@@ -131,15 +131,15 @@ export const WaitingTable = styled.table`
 
 //테이블 각 행에 대한 스타일링 => 호버, 클릭(하이라이트)
 export const TableRow = styled.tr`
-  background-color: rgb(160, 160, 160);
+  background-color: #FEF0DF;
 
   ${(props) =>
     props.selectable &&
     css`
-      background-color: rgb(240, 240, 240);
+      background-color: #FEF0DF;
 
       &:hover {
-        background-color: #d8bfd8;
+        background-color: white;
       }
     `}
 
@@ -147,7 +147,8 @@ export const TableRow = styled.tr`
     props.highlight &&
     css`
       border: 2px solid;
-      border-color: purple;
+      border-color: black;
+      background-color: white;
     `}
 `;
 

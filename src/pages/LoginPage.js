@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; 
 import {LoginBackGround, LoginForm, Button} from "../lib/styles/PageStyles"
-
+import img from "../assets/logo.png"
 
 function LoginPage() {
   const [username, setUsername] = useState("");
@@ -40,8 +40,11 @@ function LoginPage() {
   };
 
   return (
-    <LoginBackGround>
-      <LoginForm onSubmit={handleLogin}>
+    <LoginBackGround style={{zIndex: "-1"}}>
+      <div style={{position: "absolute", bottom: "55%", zIndex:"1"}}>
+        <img src={img} alt="로고" style={{width: "300px", height:"300px", background: "transparent" }}/>
+      </div>
+      <LoginForm style={{zIndex: "2"}} onSubmit={handleLogin}>
         <div style={{marginBottom: "20px", width: "80%" }}>
           <label
             style={{ display: "block", marginBottom: "5px", textAlign: "center"}}

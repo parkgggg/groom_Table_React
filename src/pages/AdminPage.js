@@ -10,6 +10,7 @@ import {
   WaitingTable,
   TableRow,
   Buttons,
+  Button,
 } from "../lib/styles/PageStyles";
 
 function AdminPage() {
@@ -113,11 +114,7 @@ function AdminPage() {
 
   return (
     <AdminBackGround>
-      <div>
-        <Buttons style={{position: "absolute", left:"5px", top: "5px"}}>
-          <button onClick={() => handleBack()}>뒤로</button>
-        </Buttons>
-      </div>
+      <Button style={{width:"50px", position:"absolute", left:"2%", top: "2%" }} onClick={() => handleBack()}>뒤로</Button>
       <h2>날짜별 대기 조회</h2>
       <ControlPanel>
         <input
@@ -129,8 +126,8 @@ function AdminPage() {
         />
 
         <Buttons>
-          <button onClick={() => handleCall()}>호출</button>
-          <button onClick={() => handleConfirm()}>확인</button>
+          <Button onClick={() => handleCall()}>호출</Button>
+          <Button onClick={() => handleConfirm()}>확인</Button>
         </Buttons>
       </ControlPanel>
 
